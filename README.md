@@ -28,31 +28,33 @@
 View Dockerfiles for the latest tags:
 
 - [markoshust/magento-nginx (Docker Hub)](https://hub.docker.com/r/markoshust/magento-nginx/)
-  - [`1.18`, `1.18-8`](https://github.com/markshust/docker-magento/tree/master/images/nginx/1.18)
+  - [`1.18`, `1.18-8`](images/nginx/1.18)
 - [markoshust/magento-php (Docker Hub)](https://hub.docker.com/r/markoshust/magento-php/)
-  - [`8.1-fpm`, `8.1-fpm-1`](https://github.com/markshust/docker-magento/tree/master/images/php/8.1)
-  - [`7.4-fpm`, `7.4-fpm-15`](https://github.com/markshust/docker-magento/tree/master/images/php/7.4)
+  - [`8.1-fpm`, `8.1-fpm-1`](images/php/8.1)
+- [markoshust/magento-opensearch (Docker Hub)](https://hub.docker.com/r/markoshust/magento-opensearch/)
+    - [`1.2`, `1.2-0`](images/opensearch/1.2)
 - [markoshust/magento-elasticsearch (Docker Hub)](https://hub.docker.com/r/markoshust/magento-elasticsearch/)
-  - [`7.16`, `7.16-0`](https://github.com/markshust/docker-magento/tree/master/images/elasticsearch/7.16)
+  - [`7.16`, `7.16-0`](images/elasticsearch/7.16)
+  - [`7.17`, `7.17-0`](images/elasticsearch/7.17)
 - [markoshust/magento-rabbitmq (Docker Hub)](https://hub.docker.com/r/markoshust/magento-rabbitmq/)
-  - [`3.9`, `3.9-0`](https://github.com/markshust/docker-magento/tree/master/images/rabbitmq/3.9)
+  - [`3.9`, `3.9-0`](images/rabbitmq/3.9)
 - [markoshust/ssh (Docker Hub)](https://hub.docker.com/r/markoshust/magento-ssh/)
-  - [`latest`](https://github.com/markshust/docker-magento/tree/master/images/ssh)
+  - [`latest`](images/ssh)
 
 ## Free Course
 
 This course is sponsored by <a href="https://m.academy" target="_blank">M.academy</a>, the simplest way to learn Magento.
 
-<a href="https://m.academy" target="_blank"><img src="https://raw.githubusercontent.com/markshust/docker-magento/master/docs/macademy-logo.png" alt="M.academy"></a>
+<a href="https://m.academy" target="_blank"><img src="docs/macademy-logo.png" alt="M.academy"></a>
 
 A free screencast course is available (which was fully refreshed in December 2021), which details the basic usage of this project:
 
 <a href="https://m.academy/courses/set-up-magento-2-development-environment-docker" target="_blank">
-<img src="https://raw.githubusercontent.com/markshust/docker-magento/master/docs/set-up-magento-2-development-environment-docker-og.png" alt="Set Up a Magento 2 Development Environment with Docker" width="400"><br/>
+<img src="docs/set-up-magento-2-development-environment-docker-og.png" alt="Set Up a Magento 2 Development Environment with Docker" width="400"><br/>
 Set Up a Magento 2 Development Environment with Docker
 </a>
 
-### Course Curriculm
+### Course Curriculum
 
 #### Intro
 
@@ -159,7 +161,8 @@ curl -s https://raw.githubusercontent.com/markshust/docker-magento/master/lib/te
 
 # Download the version of Magento you want to use with:
 bin/download 2.4.5-p1 community
-# You can specify the version and type (community, enterprise, or mageos).
+# You can specify the version and type (community, enterprise, mageos, mageos-nightly, mageos-mirror, mageos-hypernode-mirror, or mageos-maxcluster-mirror).
+# The mageos type is an alias for mageos-mirror.
 # If no arguments are passed, "2.4.5-p1" and "community" are the default values used.
 
 # or for Magento core development:
@@ -214,6 +217,12 @@ bin/restart
 open https://magento.test
 ```
 
+### Elasticsearch vs OpenSearch
+OpenSearch is set as the default search engine when setting up this project. Follow the instructions below if you want to use Elasticsearch instead:
+1. Comment out or remove the `opensearch` container in both the [`compose.yaml`](https://github.com/markshust/docker-magento/blob/master/compose/compose.yaml#L55-L66) and [`compose.healthcheck.yaml`](https://github.com/markshust/docker-magento/blob/master/compose/compose.healthcheck.yaml#L38-L43) files
+2. Uncomment the `elasticsearch` container in both the [`compose.yaml`](https://github.com/markshust/docker-magento/blob/master/compose/compose.yaml#L70-L81) and [`compose.healthcheck.yaml`](https://github.com/markshust/docker-magento/blob/master/compose/compose.healthcheck.yaml#L45-L50) files
+3. Update the `bin/setup` command to use the [`$ES_HOST` variable as the value for the `--elasticsearch-host` argument passed to `setup:install`](https://github.com/markshust/docker-magento/blob/master/compose/bin/setup#L65)
+
 ## Updates
 
 To update your project to the latest version of `docker-magento`, run:
@@ -259,7 +268,7 @@ It is recommended to keep your root docker config files in one repository, and y
 - `bin/pwa-studio`: (BETA) Start the PWA Studio server. Note that Chrome will throw SSL cert errors and not allow you to view the site, but Firefox will.
 - `bin/redis`: Run a command from the redis container. Ex. `bin/redis redis-cli monitor`
 - `bin/remove`: Remove all containers.
-- `bin/removeall`: Remove all containers, networks, volumes, and images.
+- `bin/removeall`: Remove all containers, networks, volumes, and images, calling `bin/stopall` before doing so.
 - `bin/removevolumes`: Remove all volumes.
 - `bin/restart`: Stop and then start all containers.
 - `bin/root`: Run any CLI command as root without going into the bash prompt. Ex `bin/root apt-get install nano`
@@ -387,10 +396,10 @@ Install and enable the PHP Debug extension from the [Visual Studio Marketplace](
 
 Otherwise, this project now automatically sets up Xdebug support with VS Code. If you wish to set this up manually, please see the [`.vscode/launch.json`](https://github.com/markshust/docker-magento/blame/master/compose/.vscode/launch.json) file.
 
-1. In VS Code, make sure that its running in a WSL window, rather than in the default window.
-2. Install the [`PHP Debug`](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug) extension on VS Code. 
+1. In VS Code, make sure that it's running in a WSL window, rather than in the default window.
+2. Install the [`PHP Debug`](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug) extension on VS Code.
 3. Create a new configuration file inside the project. Go to the `Run and Debug` section in VS Code, then click on `create a launch.json file`.
-4. Attention to the following configs inside the file: 
+4. Attention to the following configs inside the file:
     * The port must be the same as the port on the xdebug.ini file.
     ```bash
       bin/cli cat /usr/local/etc/php/php.ini
@@ -499,7 +508,7 @@ Copy `compose.dev-linux.yaml` to `compose.dev.yaml` before installing Magento to
 
 The `host.docker.internal` hostname is used on Docker for Mac/Windows to reference the Docker daemon. On Linux, this hostname does not exist.
 
-This hostname is [hard-coded in the php.ini file](https://github.com/markshust/docker-magento/blob/master/images/php/7.4/conf/php.ini#L8). To make this hostname resolve, add `"host.docker.internal:172.17.0.1"` to the `app.extra_hosts` parameter of `compose.yaml`, replacing `172.17.0.1` with the result of:
+This hostname is [hard-coded in the php.ini file](images/php/8.1/conf/php.ini#L8). To make this hostname resolve, add `"host.docker.internal:172.17.0.1"` to the `app.extra_hosts` parameter of `compose.yaml`, replacing `172.17.0.1` with the result of:
 
 ```
 docker run --rm alpine ip route | awk 'NR==1 {print $3}'
@@ -641,7 +650,7 @@ Upon saving this file, we will see the Grunt watcher detect the changes, and you
 
 This course is sponsored by <a href="https://m.academy" target="_blank">M.academy</a>, the simplest way to learn Magento.
 
-<a href="https://m.academy" target="_blank"><img src="https://raw.githubusercontent.com/markshust/docker-magento/master/docs/macademy-logo.png" alt="M.academy"></a>
+<a href="https://m.academy" target="_blank"><img src="docs/macademy-logo.png" alt="M.academy"></a>
 
 ### Mark Shust
 
