@@ -31,11 +31,13 @@ View Dockerfiles for the latest tags:
   - [`1.18`, `1.18-8`](images/nginx/1.18)
 - [markoshust/magento-php (Docker Hub)](https://hub.docker.com/r/markoshust/magento-php/)
   - [`8.1-fpm`, `8.1-fpm-1`](images/php/8.1)
+  - [`8.2-fpm-develop`](images/php/8.2)
 - [markoshust/magento-opensearch (Docker Hub)](https://hub.docker.com/r/markoshust/magento-opensearch/)
     - [`1.2`, `1.2-0`](images/opensearch/1.2)
+    - [`2.4-develop`](images/opensearch/2.4)
 - [markoshust/magento-elasticsearch (Docker Hub)](https://hub.docker.com/r/markoshust/magento-elasticsearch/)
-  - [`7.16`, `7.16-0`](images/elasticsearch/7.16)
   - [`7.17`, `7.17-0`](images/elasticsearch/7.17)
+  - [`8.4-develop`](images/elasticsearch/8.4)
 - [markoshust/magento-rabbitmq (Docker Hub)](https://hub.docker.com/r/markoshust/magento-rabbitmq/)
   - [`3.9`, `3.9-0`](images/rabbitmq/3.9)
 - [markoshust/ssh (Docker Hub)](https://hub.docker.com/r/markoshust/magento-ssh/)
@@ -129,10 +131,10 @@ mkdir -p ~/Sites/magento
 cd $_
 
 # Run this automated one-liner from the directory you want to install your project.
-curl -s https://raw.githubusercontent.com/markshust/docker-magento/master/lib/onelinesetup | bash -s -- magento.test 2.4.5-p1 community
+curl -s https://raw.githubusercontent.com/markshust/docker-magento/master/lib/onelinesetup | bash -s -- magento.test 2.4.6 community
 ```
 
-The `magento.test` above defines the hostname to use, and the `2.4.5-p1` defines the Magento version to install. Note that since we need a write to `/etc/hosts` for DNS resolution, you will be prompted for your system password during setup.
+The `magento.test` above defines the hostname to use, and the `2.4.6` defines the Magento version to install. Note that since we need a write to `/etc/hosts` for DNS resolution, you will be prompted for your system password during setup.
 
 After the one-liner above completes running, you should be able to access your site at `https://magento.test`.
 
@@ -160,10 +162,10 @@ cd $_
 curl -s https://raw.githubusercontent.com/markshust/docker-magento/master/lib/template | bash
 
 # Download the version of Magento you want to use with:
-bin/download 2.4.5-p1 community
+bin/download 2.4.6 community
 # You can specify the version and type (community, enterprise, mageos, mageos-nightly, mageos-mirror, mageos-hypernode-mirror, or mageos-maxcluster-mirror).
 # The mageos type is an alias for mageos-mirror.
-# If no arguments are passed, "2.4.5-p1" and "community" are the default values used.
+# If no arguments are passed, "2.4.6" and "community" are the default values used.
 
 # or for Magento core development:
 # bin/start --no-dev
@@ -195,6 +197,9 @@ curl -s https://raw.githubusercontent.com/markshust/docker-magento/master/lib/te
 cp -R ~/Sites/existing src
 # or: git clone git@github.com:myrepo.git src
 
+# If your vendor directory was empty, populate it with:
+bin/composer install
+
 # Start some containers, copy files to them and then restart the containers:
 bin/start --no-dev
 bin/copytocontainer --all ## Initial copy will take a few minutes...
@@ -221,7 +226,20 @@ open https://magento.test
 OpenSearch is set as the default search engine when setting up this project. Follow the instructions below if you want to use Elasticsearch instead:
 1. Comment out or remove the `opensearch` container in both the [`compose.yaml`](https://github.com/markshust/docker-magento/blob/master/compose/compose.yaml#L55-L66) and [`compose.healthcheck.yaml`](https://github.com/markshust/docker-magento/blob/master/compose/compose.healthcheck.yaml#L38-L43) files
 2. Uncomment the `elasticsearch` container in both the [`compose.yaml`](https://github.com/markshust/docker-magento/blob/master/compose/compose.yaml#L70-L81) and [`compose.healthcheck.yaml`](https://github.com/markshust/docker-magento/blob/master/compose/compose.healthcheck.yaml#L45-L50) files
-3. Update the `bin/setup` command to use the [`$ES_HOST` variable as the value for the `--elasticsearch-host` argument passed to `setup:install`](https://github.com/markshust/docker-magento/blob/master/compose/bin/setup#L65)
+3. Update the `bin/setup-install` command to use the Elasticsearch ratther than OpenSearch. Change:
+
+```
+--opensearch-host="$OPENSEARCH_HOST" \
+--opensearch-port="$OPENSEARCH_PORT" \
+```
+
+to:
+
+```
+--elasticsearch-host="$ES_HOST" \
+--elasticsearch-port="$ES_PORT" \
+
+```
 
 ## Updates
 
@@ -250,7 +268,8 @@ It is recommended to keep your root docker config files in one repository, and y
 - `bin/dev-urn-catalog-generate`: Generate URN's for PhpStorm and remap paths to local host. Restart PhpStorm after running this command.
 - `bin/devconsole`: Alias for `bin/n98-magerun2 dev:console`
 - `bin/docker-compose`: Support V1 (`docker-compose`) and V2 (`docker compose`) docker compose command, and use custom configuration files, such as `compose.yml` and `compose.dev.yml`
-- `bin/download`: Download specific Magento version from Composer to the container, with optional arguments of the version (2.4.5-p1 [default]) and type ("community" [default], "enterprise", or "mageos"). Ex. `bin/download 2.4.5-p1 enterprise`
+- `bin/download`: Download specific Magento version from Composer to the container, with optional arguments of the version (2.4.6 [default]) and type ("community" [default], "enterprise", or "mageos"). Ex. `bin/download 2.4.6 enterprise`
+- `bin/debug-cli`: Enable Xdebug for bin/magento, with an optional argument of the IDE key. Defaults to PHPSTORM Ex. `bin/debug-cli enable PHPSTORM`
 - `bin/fixowns`: This will fix filesystem ownerships within the container.
 - `bin/fixperms`: This will fix filesystem permissions within the container.
 - `bin/grunt`: Run the grunt binary. Ex. `bin/grunt exec`
@@ -656,7 +675,11 @@ This course is sponsored by <a href="https://m.academy" target="_blank">M.academ
 
 My name is Mark Shust and I'm the creator of this repo. I'm a <a href="http://www.zend.com/en/yellow-pages/ZEND014633" target="_blank">Zend Certified Engineer</a> and <a href="https://www.youracclaim.com/users/mark-shust" target="_blank">Adobe Certified Magento Developer</a>, and have been involved since the early days of Magento (0.8!). I'm no longer available for consulting, but am creating course content full-time at <a href="https://m.academy" target="_blank">M.academy</a>.
 
-You can follow me on Twitter <a href="https://twitter.com/MarkShust" target="_blank">@MarkShust</a>, connect with me on LinkedIn <a href="https://www.linkedin.com/in/MarkShust/" target="_blank">@MarkShust</a>, read my blog at <a href="https://markshust.com" target="_blank">markshust.com</a>, or contact me directly at <a href="mailto:mark@shust.com">mark@shust.com</a>.
+- <a href="https://www.linkedin.com/in/MarkShust/" target="_blank">🔗 Connect with me on LinkedIn</a>
+- <a href="https://youtube.com/markshust" target="_blank">🎥 Watch my YouTube videos</a>
+- <a href="https://twitter.com/MarkShust" target="_blank">🐦 Follow me on Twitter</a>
+- <a href="https://markshust.com" target="_blank">📖 Read my blog</a>
+- <a href="mailto:mark@shust.com">💌 Contact me</a>
 
 ## License
 
