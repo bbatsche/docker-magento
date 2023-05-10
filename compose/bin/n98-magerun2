@@ -1,14 +1,20 @@
-#!/usr/bin/env bash
-if ! bin/cliq ls bin/n98-magerun2.phar; then
-  echo "Downloading n98-magerun2.phar, just a moment..."
-  bin/clinotty curl -sS -O https://files.magerun.net/n98-magerun2.phar
-  bin/clinotty curl -sS -o n98-magerun2.phar.sha256 https://files.magerun.net/sha256.php?file=n98-magerun2.phar
-  bin/clinotty shasum -a 256 -c n98-magerun2.phar.sha256
-  [ $? != 0 ] && echo "sha256 checksum do not match!" && exit
+#!/bin/bash
 
-  bin/cliq chmod +x n98-magerun2.phar
-  bin/cliq mkdir -p bin
-  bin/cliq mv n98-magerun2.phar bin
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+
+if ! "${BIN_DIR}/cliq" ls bin/n98-magerun2.phar; then
+  echo "Downloading n98-magerun2.phar, just a moment..."
+  "${BIN_DIR}/clinotty" curl -sS -O https://files.magerun.net/n98-magerun2.phar
+  "${BIN_DIR}/clinotty" curl -sS -o n98-magerun2.phar.sha256 https://files.magerun.net/sha256.php?file=n98-magerun2.phar
+
+  if ! "${BIN_DIR}/clinotty" shasum -a 256 -c n98-magerun2.phar.sha256; then
+    echo "sha256 checksum do not match!"
+    exit
+  fi
+
+  "${BIN_DIR}/cliq" chmod +x n98-magerun2.phar
+  "${BIN_DIR}/cliq" mkdir -p bin
+  "${BIN_DIR}/cliq" mv n98-magerun2.phar bin
 fi
 
-bin/cli bin/n98-magerun2.phar "$@"
+"${BIN_DIR}/cli" bin/n98-magerun2.phar "$@"

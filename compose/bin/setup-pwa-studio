@@ -1,10 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+[[ -z "${PROJECT_ROOT}" ]] && PROJECT_ROOT="$(dirname "${BIN_DIR}")"
+
 set -o errexit
 echo "Install NodeJS and Yarn on host machine, otherwise setup will fail"
 
 BASE_URL=${1:-master-7rqtwti-mfwmkrjfqvbjk.us-4.magentosite.cloud}
-git clone https://github.com/magento/pwa-studio.git
-cd pwa-studio
+
+git clone https://github.com/magento/pwa-studio.git "${PROJECT_ROOT}/pwa-studio"
+cd "${PROJECT_ROOT}/pwa-studio"
+
 yarn install
 yarn buildpack create-custom-origin packages/venia-concept
-MAGENTO_BACKEND_URL="https://$BASE_URL/" yarn buildpack create-env-file packages/venia-concept
+
+MAGENTO_BACKEND_URL="https://${BASE_URL}/" yarn buildpack create-env-file packages/venia-concept

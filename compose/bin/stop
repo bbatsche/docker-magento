@@ -1,2 +1,5 @@
-#!/usr/bin/env bash
-bin/docker-compose stop "$@"
+#!/bin/bash
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+
+"${BIN_DIR}/docker-compose" stop "$@"

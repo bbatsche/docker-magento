@@ -1,0 +1,54 @@
+#!/bin/bash
+
+[[ -z "$1" ]] && echo "Please specify repository to clone (eg git@github.com:magento-commerce/magento-live-search.git)" && exit
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+[[ -z "${PROJECT_ROOT}" ]] && PROJECT_ROOT="$(dirname "${BIN_DIR}")"
+
+URL="$1"
+NAME=$(echo "${URL}" | rev | cut -b5- | cut -d/ -f1 | rev)
+REPO_DIR="${PROJECT_ROOT}/extensions/${NAME}"
+
+if [[ ! -d "${REPO_DIR}" ]]; then
+  echo "Cloning repository"
+
+  git clone "${URL}" "${REPO_DIR}"
+fi
+
+(
+  cd "${REPO_DIR}" || exit
+
+  git fetch --all --tags
+
+  if [[ "$2" != "" ]]; then
+    BRANCH="$2"
+
+    git checkout "${BRANCH}"
+  fi
+
+  # May be in a detatched head in which case we don't care if this fails
+  git pull || true
+)
+
+modules=()
+
+for file in "${REPO_DIR}"/*; do
+  [[ ! -d "${file}" ]] && continue
+  [[ ! -f "${file}/composer.json" ]] && continue
+
+  dir=$(basename "${file}")
+
+  [[ "${dir}" == "_metapackage" ]] && continue
+
+  if ! grep -q "./extensions/${NAME}/${dir}:" "${PROJECT_ROOT}/compose.dev.yaml"; then
+    sed -i '' -e "s|      ## END RESPOSITORY MOUNTS|      - ./extensions/${NAME}/${dir}:/var/www/html/app/code/Magento/${dir}:consistent\n      ## END RESPOSITORY MOUNTS|" "${PROJECT_ROOT}/compose.dev.yaml"
+  fi
+
+  modules+=("Magento_${dir}")
+done
+
+"${BIN_DIR}/restart"
+"${BIN_DIR}/magento" module:enable "${modules[@]}"
+"${BIN_DIR}/magento" setup:di:compile
+"${BIN_DIR}/magento" setup:upgrade
+"${BIN_DIR}/cache-clean"

@@ -20,7 +20,6 @@ services:
       - "443:8443"
     volumes: &appvolumes
       - ~/.composer:/var/www/.composer:cached
-      - ~/.ssh/id_rsa:/var/www/.ssh/id_rsa:cached
       - ~/.ssh/known_hosts:/var/www/.ssh/known_hosts:cached
       - appdata:/var/www/html
       - sockdata:/sock
@@ -67,24 +66,6 @@ services:
       - "cluster.routing.allocation.disk.threshold_enabled=false"
       - "index.blocks.read_only_allow_delete"
 
-  ## If you wish to use Elasticsearch, comment out opensearch image above and
-  ## uncomment this block. Do the same in the composer.healthcheck.yaml file.
-  # Additionally, if you are performing the manual setup, you will need to
-  # update the bin/setup command to use the $ES_HOST variable as the value for
-  # the --elasticsearch-host argument passed to bin/magento setup:install.
-  #elasticsearch:
-  #  image: markoshust/magento-elasticsearch:7.17-0
-  #  ports:
-  #    - "9200:9200"
-  #    - "9300:9300"
-  #  env_file: env/elasticsearch.env
-  #  environment:
-  #    - "discovery.type=single-node"
-  #    ## Avoid test failures due to small disks
-  #    ## More info at https://github.com/markshust/docker-magento/issues/488
-  #    - "cluster.routing.allocation.disk.threshold_enabled=false"
-  #    - "index.blocks.read_only_allow_delete"
-
   rabbitmq:
     image: markoshust/magento-rabbitmq:3.9-0
     ports:
@@ -98,20 +79,6 @@ services:
     image: sj26/mailcatcher
     ports:
       - "1080:1080"
-
-  ## Blackfire support, uncomment to enable
-  #blackfire:
-  #  image: blackfire/blackfire:2
-  #  ports:
-  #    - "8307"
-  #  env_file: env/blackfire.env
-
-  ## Selenium support, uncomment to enable
-  #selenium:
-  #  image: selenium/standalone-chrome-debug:3.8.1
-  #  ports:
-  #    - "5900:5900"
-  #  extra_hosts: *appextrahosts
 
 volumes:
   appdata:

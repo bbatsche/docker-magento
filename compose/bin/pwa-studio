@@ -1,10 +1,15 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
 set -o errexit
 
-if [ ! -d pwa-studio ]; then
-    echo "PWA studio must first be installed by running bin/setup-pwa-studio"
-    exit
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+[[ -z "${PROJECT_ROOT}" ]] && PROJECT_ROOT="$(dirname "${BIN_DIR}")"
+
+if [[ ! -d pwa-studio ]]; then
+  echo "PWA studio must first be installed by running bin/setup-pwa-studio"
+  exit
 fi
 
-cd pwa-studio
+cd "${PROJECT_ROOT}/pwa-studio"
+
 NODE_TLS_REJECT_UNAUTHORIZED=0 yarn run watch:all

@@ -1,2 +1,5 @@
-#!/usr/bin/env bash
-bin/n98-magerun2 db:dump --stdout "$@"
+#!/bin/bash
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+
+"${BIN_DIR}/n98-magerun2" db:dump --stdout "$@"

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+
+"${BIN_DIR}/composer" require magento/live-search
+
+"${BIN_DIR}/magento" setup:upgrade
+"${BIN_DIR}/magento" indexer:reindex
+"${BIN_DIR}/cache-clean"
