@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
-bin/stopall
-bin/remove
-bin/removevolumes
+#!/bin/bash
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+
+"${BIN_DIR}/stop"
+"${BIN_DIR}/remove"
+"${BIN_DIR}/removevolumes"

@@ -1,28 +1,27 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+[[ -z "${PROJECT_ROOT}" ]] && PROJECT_ROOT="$(dirname "${BIN_DIR}")"
 
 VERSION=${1:-2.4.6}
-EDITION=${2:-community}
 
-bin/stop
+"${BIN_DIR}/stop"
 
-bin/start --no-dev
-[ $? != 0 ] && echo "Failed to start Docker services" && exit
+# Translate version to root in integer format. Ex. 2.4.3-p1 -> 243
+VERSION_ROOT=$(echo "${VERSION}" | cut -b 1-5 | sed -e 's/\.//g')
 
-bin/setup-composer-auth
-
-bin/fixowns
-
-if [ "$EDITION" == "mageos-nightly" ]; then
-  bin/clinotty composer create-project --stability alpha --repository-url=https://upstream-nightly.mage-os.org magento/project-community-edition .
-elif [ "$EDITION" == "mageos-mirror" ] || [ "$EDITION" == "mageos" ]; then
-  bin/clinotty composer create-project --repository-url=https://mirror.mage-os.org magento/project-community-edition="${VERSION}" .
-elif [ "$EDITION" == "mageos-hypernode-mirror" ]; then
-  bin/clinotty composer create-project --repository-url=https://mage-os.hypernode.com/mirror magento/project-community-edition="${VERSION}" .
-elif [ "$EDITION" == "mageos-maxcluster-mirror" ]; then
-  bin/clinotty composer create-project --repository-url=https://mage-os.maxcluster.net/mirror magento/project-community-edition="${VERSION}" .
+if (($(echo "${VERSION_ROOT} < 244" | bc -l))); then
+  sed -i '' -e 's/8.1\-fpm\-1/7.4\-fpm\-15/g' "${PROJECT_ROOT}/compose.yaml"
 else
-  bin/clinotty composer create-project --repository=https://repo.magento.com/ magento/project-"${EDITION}"-edition="${VERSION}" .
+  sed -i '' -e 's/7.4\-fpm\-15/8.2\-fpm\-1/g' "${PROJECT_ROOT}/compose.yaml"
 fi
 
-bin/clinotty [ ! -f "./var/composer_home/auth.json" ] && bin/clinotty mkdir -p ./var/composer_home && bin/clinotty cp /var/www/.composer/auth.json ./var/composer_home/auth.json
+if ! "${BIN_DIR}/start" --no-dev; then
+  echo "Failed to start Docker services"
+  exit
+fi
 
+"${BIN_DIR}/setup-composer-auth"
+"${BIN_DIR}/fixowns"
+"${BIN_DIR}/composer" create-project --repository=https://repo.magento.com/ magento/project-enterprise-edition="${VERSION}" .
+"${BIN_DIR}/clinotty" [ ! -f "./var/composer_home/auth.json" ] && "${BIN_DIR}/clinotty" mkdir -p ./var/composer_home && "${BIN_DIR}/clinotty" cp /var/www/.composer/auth.json ./var/composer_home/auth.json

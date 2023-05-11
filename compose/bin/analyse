@@ -1,2 +1,5 @@
-#!/usr/bin/env bash
-bin/cli vendor/bin/phpstan analyse "$@"
+#!/bin/bash
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+
+"${BIN_DIR}/cli" vendor/bin/phpstan analyse "$@"

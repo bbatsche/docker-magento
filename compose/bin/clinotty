@@ -1,4 +1,8 @@
-#!/usr/bin/env bash
-[ -z "$1" ] && echo "Please specify a CLI command (ex. ls)" && exit
+#!/bin/bash
+
+[[ -z "$1" ]] && echo "Please specify a CLI command (ex. ls)" && exit
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+
 # -T: Disable pseudo-tty allocation
-bin/docker-compose exec -T phpfpm "$@"
+"${BIN_DIR}/docker-compose" exec -T phpfpm "$@"

@@ -1,2 +1,5 @@
-#!/usr/bin/env bash
-bin/clinotty vendor/bin/mftf "$@"
+#!/bin/bash
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+
+"${BIN_DIR}/clinotty" vendor/bin/mftf "$@"

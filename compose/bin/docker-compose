@@ -1,13 +1,21 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+[[ -z "${PROJECT_ROOT}" ]] && PROJECT_ROOT="$(dirname "${BIN_DIR}")"
 
 if docker compose version > /dev/null 2>&1; then
   DOCKER_COMPOSE="docker compose"
 else
-  DOCKER_COMPOSE="docker-compose"
+  IFS=$'\n'
+  for compose_path in $(which -a docker-compose); do
+    [[ "${compose_path}" != "$0" ]] && DOCKER_COMPOSE=${compose_path} && break
+  done
 fi
 
-if [ "$1" == "--no-dev" ]; then
-  ${DOCKER_COMPOSE} -f compose.yaml -f compose.healthcheck.yaml "${@:2}"
+cd "${PROJECT_ROOT}" || exit
+
+if [[ "$1" == "--no-dev" ]]; then
+  ${DOCKER_COMPOSE} -f "${PROJECT_ROOT}/compose.yaml" -f "${PROJECT_ROOT}/compose.healthcheck.yaml" "${@:2}"
 else
-  ${DOCKER_COMPOSE} -f compose.yaml -f compose.healthcheck.yaml -f compose.dev.yaml "$@"
+  ${DOCKER_COMPOSE} -f "${PROJECT_ROOT}/compose.yaml" -f "${PROJECT_ROOT}/compose.healthcheck.yaml" -f "${PROJECT_ROOT}/compose.dev.yaml" "$@"
 fi

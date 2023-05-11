@@ -5,7 +5,11 @@
       "type": "php",
       "request": "launch",
       "pathMappings": {
-        "/var/www/html": "${workspaceFolder}"
+        "/var/www/html": "${workspaceFolder}/src",
+
+        // Add you modules here. Paths should follow the pattern:
+        // "/var/www/html/app/code/Magento/[ModuleName]": "${workspaceFolder}/extensions/[repo]/[ModuleName]"
+
       },
       "port": 9003,
     }

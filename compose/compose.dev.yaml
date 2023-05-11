@@ -19,14 +19,8 @@ services:
       #- ./src/patches:/var/www/html/patches:cached
       #- ./src/var/log:/var/www/html/var/log:cached
       #- ./src/var/report:/var/www/html/var/report:cached
+      ## START REPOSITORY MOUNTS
+      ## END RESPOSITORY MOUNTS
 
   phpfpm:
     volumes: *appvolumes
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    env_file: env/db.env
-    ports:
-      - "8080:80"
-    depends_on:
-      - db

@@ -1,19 +1,27 @@
-#!/usr/bin/env bash
-[ -z "$1" ] && echo "Please specify a directory or file to copy to container (ex. vendor, --all)" && exit
+#!/bin/bash
 
-REAL_SRC=$(cd -P "src" && pwd)
-if [ "$1" == "--all" ]; then
-  docker cp "$REAL_SRC/./" "$(bin/docker-compose ps -q phpfpm|awk '{print $1}')":/var/www/html/
+[[ -z "$1" ]] && echo "Please specify a directory or file to copy to container (ex. vendor, --all)" && exit
+
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+[[ -z "${PROJECT_ROOT}" ]] && PROJECT_ROOT="$(dirname "${BIN_DIR}")"
+
+REAL_SRC=$(cd -P "${PROJECT_ROOT}/src" && pwd)
+if [[ "$1" == "--all" ]]; then
+  docker cp "${REAL_SRC}/./" "$("${BIN_DIR}/docker-compose" ps -q phpfpm | awk '{print $1}')":/var/www/html/
+
   echo "Completed copying all files from host to container"
-  bin/fixowns
-  bin/fixperms
+
+  "${BIN_DIR}/fixowns"
+  "${BIN_DIR}/fixperms"
 else
-  if [ -f "$REAL_SRC/$1" ]; then
-    docker cp "$REAL_SRC/${1}" "$(bin/docker-compose ps -q phpfpm|awk '{print $1}')":/var/www/html/"$1"
+  if [[ -f "${REAL_SRC}/$1" ]]; then
+    docker cp "${REAL_SRC}/${1}" "$("${BIN_DIR}/docker-compose" ps -q phpfpm | awk '{print $1}')":/var/www/html/"$1"
   else
-    docker cp "$REAL_SRC/${1}" "$(bin/docker-compose ps -q phpfpm|awk '{print $1}')":/var/www/html/"$(dirname "$1")"
+    docker cp "${REAL_SRC}/${1}" "$("${BIN_DIR}/docker-compose" ps -q phpfpm | awk '{print $1}')":/var/www/html/"$(dirname "$1")"
   fi
+
   echo "Completed copying $1 from host to container"
-  bin/fixowns "$1"
-  bin/fixperms "$1"
+
+  "${BIN_DIR}/fixowns" "$1"
+  "${BIN_DIR}/fixperms" "$1"
 fi

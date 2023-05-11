@@ -1,4 +1,4 @@
-SHELL := /usr/bin/env bash
+SHELL := /bin/bash
 
 args = `arg="$(filter-out $(firstword $(MAKECMDGOALS)),$(MAKECMDGOALS))" && echo $${arg:-${1}}`
 
@@ -19,7 +19,7 @@ help:
 	@echo ""
 	@echo "$(call yellow,Use the following CLI commands:)"
 	@echo "$(call red,===============================)"
-	@echo "$(call format,bash,'Drop into the bash prompt of your Docker container.')"
+	@echo "$(call format,shell,'Drop into the bash prompt of your Docker container.')"
 	@echo "$(call format,cache-clean,'Access the cache-clean CLI.')"
 	@echo "$(call format,cli,'Run any CLI command without going into the bash prompt.')"
 	@echo "$(call format,clinotty,'Run any CLI command with no TTY.')"
@@ -62,9 +62,10 @@ help:
 	@echo "$(call format,stop,'Stop all containers.')"
 	@echo "$(call format,update,'Update your project to the latest version of docker-magento.')"
 	@echo "$(call format,xdebug,'Disable or enable Xdebug.')"
+	@echo "$(call format,lint,'Check shell script style & syntax.')"
 
-bash:
-	@./usr/bin/env bash
+shell:
+	@./bin/shell
 
 cache-clean:
 	@./bin/cache-clean $(call args)
@@ -191,3 +192,7 @@ update:
 
 xdebug:
 	@./bin/xdebug $(call args)
+
+lint:
+	shellcheck -o add-default-case,avoid-nullary-conditions,check-set-e-suppressed,check-unassigned-uppercase,quote-safe-variables,require-double-brackets,require-variable-braces -x bin/*
+	shfmt -i 2 -bn -ci -sr -d bin/*

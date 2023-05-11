@@ -1,11 +1,15 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# shellcheck source=../env/db.env
-source env/db.env
-if [ -t 0 ]; then
+[[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
+[[ -z "${PROJECT_ROOT}" ]] && PROJECT_ROOT="$(dirname "${BIN_DIR}")"
+
+# shellcheck source=./env/db.env
+source "${PROJECT_ROOT}/env/db.env"
+
+if [[ -t 0 ]]; then
   # Need tty to run mysql shell
-  bin/cli mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" "$@"
+  "${BIN_DIR}/cli" mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" "$@"
 else
   # Read from stdin, ex: bin/mysql < dbdump.sql
-  bin/clinotty mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" "$@"
+  "${BIN_DIR}/clinotty" mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" "${MYSQL_DATABASE}" "$@"
 fi
