@@ -52,5 +52,5 @@ source "${PROJECT_ROOT}/env/redis.env"
   --opensearch-host="${OPENSEARCH_HOST}" \
   --opensearch-port="${OPENSEARCH_PORT}" \
   --use-rewrites=1 \
-  --disable-modules=Magento_TwoFactorAuth,Magento_Elasticsearch,Magento_Elasticsearch7,Magento_ElasticsearchCatalogPermissions,Magento_AdvancedSearch,Magento_InventoryElasticsearch \
+  --disable-modules=Magento_TwoFactorAuth \
   --no-interaction

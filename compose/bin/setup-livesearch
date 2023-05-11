@@ -4,6 +4,14 @@
 
 "${BIN_DIR}/composer" require magento/live-search
 
+"${BIN_DIR}/magento" module:disable \
+    Magento_Elasticsearch, \
+    Magento_Elasticsearch6, \
+    Magento_Elasticsearch7, \
+    Magento_ElasticsearchCatalogPermissions, \
+    Magento_AdvancedSearch, \
+    Magento_InventoryElasticsearch
+
 "${BIN_DIR}/magento" setup:upgrade
-"${BIN_DIR}/magento" indexer:reindex
-"${BIN_DIR}/cache-clean"
+
+echo You may now disable the opensearch entries in compose.yaml \& compose.healthcheck.yaml and restart the containers.
