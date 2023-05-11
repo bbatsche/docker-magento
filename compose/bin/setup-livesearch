@@ -14,4 +14,4 @@
 
 "${BIN_DIR}/magento" setup:upgrade
 
-echo -e "\nYou may now disable the opensearch entries in compose.yaml \& compose.healthcheck.yaml and restart the containers."
+echo -e "\nYou may now disable the opensearch entries in compose.yaml & compose.healthcheck.yaml and restart the containers."
