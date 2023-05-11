@@ -7,7 +7,7 @@
       "pathMappings": {
         "/var/www/html": "${workspaceFolder}/src",
 
-        // Add you modules here. Paths should follow the pattern:
+        // Add your modules here. Paths should follow the pattern:
         // "/var/www/html/app/code/Magento/[ModuleName]": "${workspaceFolder}/extensions/[repo]/[ModuleName]"
 
       },
