@@ -49,6 +49,7 @@ source "${PROJECT_ROOT}/env/redis.env"
   --session-save-redis-host="${REDIS_SESSION_SAVE_HOST}" \
   --session-save-redis-log-level=4 \
   --session-save-redis-db=2 \
+  --search-engine=opensearch \
   --opensearch-host="${OPENSEARCH_HOST}" \
   --opensearch-port="${OPENSEARCH_PORT}" \
   --use-rewrites=1 \
