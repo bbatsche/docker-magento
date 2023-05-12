@@ -7,15 +7,15 @@ set -o errexit
 
 DOMAIN=${1:-magento.test}
 
-# shellcheck source=./env/db.env
+# shellcheck source=../env/db.env
 source "${PROJECT_ROOT}/env/db.env"
-# shellcheck source=./env/magento.env
+# shellcheck source=../env/magento.env
 source "${PROJECT_ROOT}/env/magento.env"
-# shellcheck source=./env/rabbitmq.env
+# shellcheck source=../env/rabbitmq.env
 source "${PROJECT_ROOT}/env/rabbitmq.env"
-# shellcheck source=./env/opensearch.env
+# shellcheck source=../env/opensearch.env
 source "${PROJECT_ROOT}/env/opensearch.env"
-# shellcheck source=./env/redis.env
+# shellcheck source=../env/redis.env
 source "${PROJECT_ROOT}/env/redis.env"
 
 "${BIN_DIR}/clinotty" bin/magento setup:install \
