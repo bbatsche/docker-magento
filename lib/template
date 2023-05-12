@@ -6,6 +6,7 @@ git checkout origin/master -- compose
 mv compose/* ./
 mv compose/.gitignore ./
 mv compose/.vscode ./
+mv compose/.envrc ./
 rm -rf compose .git
 git init
 

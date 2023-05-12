@@ -194,5 +194,5 @@ xdebug:
 	@./bin/xdebug $(call args)
 
 lint:
-	shellcheck -o add-default-case,avoid-nullary-conditions,check-set-e-suppressed,check-unassigned-uppercase,quote-safe-variables,require-double-brackets,require-variable-braces -x bin/*
+	shellcheck -o add-default-case,avoid-nullary-conditions,check-set-e-suppressed,check-unassigned-uppercase,quote-safe-variables,require-double-brackets,require-variable-braces -P bin -P env -x bin/*
 	shfmt -i 2 -bn -ci -sr -d bin/*

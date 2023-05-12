@@ -1,6 +1,6 @@
 name: 'ShellCheck'
 
-on: 
+on:
   push:
     paths:
     - 'compose/bin/**'
@@ -24,7 +24,7 @@ jobs:
       uses: ludeeus/action-shellcheck@master
       id: check
       env:
-        SHELLCHECK_OPTS: -x -e SC2181 -P compose/bin -P compose/env
+        SHELLCHECK_OPTS: -o add-default-case,avoid-nullary-conditions,check-set-e-suppressed,check-unassigned-uppercase,quote-safe-variables,require-double-brackets,require-variable-braces -P compose/bin -P compose/env -x
       with:
         check_together: true
         scandir: './compose/bin'

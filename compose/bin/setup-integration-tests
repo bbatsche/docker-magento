@@ -3,7 +3,7 @@
 [[ -z "${BIN_DIR}" ]] && BIN_DIR="$(dirname "$0")"
 [[ -z "${PROJECT_ROOT}" ]] && PROJECT_ROOT="$(dirname "${BIN_DIR}")"
 
-# shellcheck source=./env/db.env
+# shellcheck source=../env/db.env
 source "${PROJECT_ROOT}/env/db.env"
 
 MYSQL_INTEGRATION_CONFIG=dev/tests/integration/etc/install-config-mysql.php
